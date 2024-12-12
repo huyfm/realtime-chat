@@ -1,0 +1,40 @@
+services:
+  db:
+    image: postgres:17.2-alpine
+    volumes:
+      # mounts volumne db-data to postgres's data folder
+      - db-data:/var/lib/postgres/data
+      # mounts host's schema.sql to container's schema.sql 
+      - ./schema.sql:/docker-entrypoint-initdb.d/schema.sql
+    networks:
+      - app-net
+    env_file:
+      - $ENV_FILE
+    restart: unless-stopped
+    healthcheck:
+      test: pg_isready -d $$POSTGRES_DB -U $$POSTGRES_USER
+      interval: 2s
+      timeout: 1s
+      retries: 3
+
+  server:
+    image: rtc:1.0
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./tls:/app/tls
+    networks:
+      - app-net
+    ports:
+      - $SRV_PORT:$SRV_PORT
+    env_file:
+      - $ENV_FILE
+    depends_on:
+      db:
+        condition: service_healthy
+
+networks:
+  app-net:
+volumes:
+  db-data:

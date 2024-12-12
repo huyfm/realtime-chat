@@ -1,0 +1,6 @@
+tls/
+.env*
+*_test.go
+http/html/*.go
+compose.yml
+Dockerfile

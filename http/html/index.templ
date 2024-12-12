@@ -1,0 +1,31 @@
+package html
+
+import "github.com/huyfm/rtc"
+
+templ HelloComponent(user *rtc.User) {
+	if user != nil {
+		<div style="color: red;">Hello, { user.Name }</div>
+	}
+}
+
+templ IndexPage(user *rtc.User) {
+	<!DOCTYPE html>
+	<html lang="en">
+		<head>
+			<title>Home page</title>
+		</head>
+		<style>
+			body {
+				font-size: 1.2rem;
+			}
+		</style>
+		<body>
+			@HelloComponent(user)
+			if user == nil {
+				<div>
+					<a href="/oauth/github">Login with Github</a>
+				</div>
+			}
+		</body>
+	</html>
+}
